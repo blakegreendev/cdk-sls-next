@@ -24,6 +24,9 @@ const cdkProject = new AwsCdkTypeScriptApp({
   ],
 });
 
+cdkProject.setScript('cdkDeploy', 'cdk deploy --all');
+cdkProject.setScript('cdkDestroy', 'cdk destroy --all');
+
 cdkProject.synth();
 
 const webProject = new web.NextJsTypeScriptProject({
@@ -68,6 +71,24 @@ const webProject = new web.NextJsTypeScriptProject({
       jsx: 'preserve',
     },
   },
+});
+
+webProject.addTask('generate-exports', {
+  description: 'Generates aws-exports.js',
+  exec: 'node bin/generateExports.js',
+});
+
+webProject.addTask('copy-schema', {
+  exec: 'cp ../appsync/schema.graphql ./schema.graphql',
+});
+
+webProject.addTask('generate-statements', {
+  exec: 'node bin/generateStatements.js',
+});
+
+webProject.addTask('codegen', {
+  description: 'Copies the backend schema and generates frontend code',
+  exec: 'yarn run copy-schema && yarn run generate-statements && graphql-codegen --config codegen.yml && rm schema.graphql',
 });
 
 webProject.synth();

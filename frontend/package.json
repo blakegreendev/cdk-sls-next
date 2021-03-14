@@ -14,7 +14,11 @@
     "watch": "npx projen watch",
     "dev": "npx projen dev",
     "server": "npx projen server",
-    "telemetry": "npx projen telemetry"
+    "telemetry": "npx projen telemetry",
+    "generate-exports": "npx projen generate-exports",
+    "copy-schema": "npx projen copy-schema",
+    "generate-statements": "npx projen generate-statements",
+    "codegen": "npx projen codegen"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^1.21.2",

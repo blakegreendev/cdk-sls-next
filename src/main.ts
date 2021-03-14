@@ -1,6 +1,7 @@
 import * as cdk from "@aws-cdk/core";
 import { Builder } from "@sls-next/lambda-at-edge";
 import { NextStack } from "./lib/next-stack";
+import { BackendStack } from "./lib/backend-stack";
 
 // Run the serverless builder, this could be done elsewhere in your workflow
 const builder = new Builder("./frontend", "./frontend/build", {
@@ -18,7 +19,10 @@ builder
   .build()
   .then(() => {
     const app = new cdk.App();
+
     new NextStack(app, `NextStack`, { env: devEnv });
+    new BackendStack(app, `BackendStack`, { env: devEnv });
+
     app.synth();
   })
   .catch((e) => {
