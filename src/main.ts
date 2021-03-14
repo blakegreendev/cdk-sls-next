@@ -1,12 +1,12 @@
-import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
+import * as cdk from "@aws-cdk/core";
+import { Builder } from "@sls-next/lambda-at-edge";
+import { NextStack } from "./lib/next-stack";
 
-export class MyStack extends Stack {
-  constructor(scope: Construct, id: string, props: StackProps = {}) {
-    super(scope, id, props);
-
-    // define resources here...
-  }
-}
+// Run the serverless builder, this could be done elsewhere in your workflow
+const builder = new Builder("./frontend", "./frontend/build", {
+  cwd: "./frontend",
+  args: ["build"],
+});
 
 // for development, use account/region from cdk cli
 const devEnv = {
@@ -14,9 +14,14 @@ const devEnv = {
   region: process.env.CDK_DEFAULT_REGION,
 };
 
-const app = new App();
-
-new MyStack(app, 'my-stack-dev', { env: devEnv });
-// new MyStack(app, 'my-stack-prod', { env: prodEnv });
-
-app.synth();
+builder
+  .build()
+  .then(() => {
+    const app = new cdk.App();
+    new NextStack(app, `NextStack`, { env: devEnv });
+    app.synth();
+  })
+  .catch((e) => {
+    console.log(e);
+    process.exit(1);
+  });
